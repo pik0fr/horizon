@@ -1,0 +1,19 @@
+[package]
+name = "horizon-mod-deps"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+publish = false
+
+# Resolve these packages into Horizon's Cargo.lock for native mods. No default
+# feature enables them, and the game has no dependency on this catalog crate.
+[dependencies]
+mlua = { version = "0.11.6", optional = true, default-features = false, features = ["luau", "vendored"] }
+notify = { version = "7", optional = true }
+toml = { version = "0.8", optional = true }
+
+[features]
+default = []
+luau = ["dep:mlua"]
+watcher = ["dep:notify"]
+legacy-toml = ["dep:toml"]

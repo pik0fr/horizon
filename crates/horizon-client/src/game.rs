@@ -573,8 +573,23 @@ impl Options {
     /// The command line, then what it asks of the process: the game folder, the account.
     /// A bad command line is a [`launch_api::UsageError`] (exit code 2, no crash report).
     fn read() -> Result<Option<Self>> {
-        let Some(mut o) = Self::parse(std::env::args().skip(1))
-            .map_err(|e| launch_api::UsageError(e.to_string()))?
+        let Some(mut o) = {
+            // Horizon-Luau resource pack bridge
+            let mut args: Vec<String> = std::env::args().skip(1).collect();
+            let at = args
+                .iter()
+                .position(|s| s == "--dedicated")
+                .unwrap_or(args.len());
+            let extra: Vec<String> = crate::mod_api::LUAU_RESOURCE_PACKS
+                .get()
+                .into_iter()
+                .flatten()
+                .flat_map(|p| ["--dev-mod".to_owned(), p.to_string_lossy().into_owned()])
+                .collect();
+            args.splice(at..at, extra);
+            Self::parse(args.into_iter())
+        }
+        .map_err(|e| launch_api::UsageError(e.to_string()))?
         else {
             return Ok(None);
         };

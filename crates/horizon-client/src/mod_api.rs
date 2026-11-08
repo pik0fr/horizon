@@ -5,6 +5,9 @@
 //! Cargo generates the trait and dispatch from the catalog and source signatures into OUT_DIR.
 use std::sync::{Arc, OnceLock};
 
+// Horizon-Luau source integration: additional immutable content pack roots.
+pub static LUAU_RESOURCE_PACKS: OnceLock<Vec<std::path::PathBuf>> = OnceLock::new();
+
 pub use crate::biome::{BiomeColors, SpawnEntry};
 pub use crate::block_sprites::{BlockSprites, FaceSprite, SpriteRef};
 pub use crate::camera::{CameraEntity, FovPlayer};

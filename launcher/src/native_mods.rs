@@ -34,6 +34,8 @@ mod inject;
 mod inject_cache;
 
 const PREFIX: &str = "native-";
+// Fork source policy: dependency validation against its Cargo.lock stays enabled.
+const NATIVE_SOURCE_REPO: &str = "pik0fr/horizon";
 /// horizon-mixins, for bundles that don't name the revision they were tested with.
 const MIXINS_GIT: &str = "https://github.com/horizon-rust/horizon-mixins";
 pub const MIXINS_REV: &str = "e8cd0aa38cffef49cb2e088ef716baa107148c02";
@@ -1162,7 +1164,7 @@ fn hooks_in(source: &str) -> Option<u32> {
 fn hooks_at(revision: &str) -> Option<u32> {
     let url = format!(
         "https://raw.githubusercontent.com/{}/{revision}/{HOOKS_FILE}",
-        backend::REPO
+        NATIVE_SOURCE_REPO
     );
     let text = backend::get(&url).ok()?.into_string().ok()?;
     hooks_in(&text)
@@ -1186,7 +1188,7 @@ fn catalog_in(text: &str) -> Option<HookCatalog> {
 fn catalog_at(revision: &str) -> Option<HookCatalog> {
     let url = format!(
         "https://raw.githubusercontent.com/{}/{revision}/{CATALOG}",
-        backend::REPO
+        NATIVE_SOURCE_REPO
     );
     let text = backend::get(&url).ok()?.into_string().ok()?;
     catalog_in(&text)
@@ -1308,7 +1310,7 @@ pub fn revision_of(version: &str) -> Result<String, String> {
     };
     let url = format!(
         "https://api.github.com/repos/{}/commits/{reference}",
-        backend::REPO
+        NATIVE_SOURCE_REPO
     );
     let commit = crate::github::json(&url)?;
     commit["sha"]
@@ -1987,7 +1989,7 @@ fn source(revision: &str) -> Result<PathBuf, String> {
     }
     let archive = format!(
         "https://codeload.github.com/{}/tar.gz/{revision}",
-        backend::REPO
+        NATIVE_SOURCE_REPO
     );
     let partial = root().join("source").join(format!(".{revision}.partial"));
     let top = unpack_archive(&archive, &partial, u64::MAX)?;
@@ -2183,7 +2185,7 @@ fn pipeline(
         },
         None => revision_of(base),
     };
-    let date = |r: &str| committed(backend::REPO, r);
+    let date = |r: &str| committed(NATIVE_SOURCE_REPO, r);
     let (pinned, mut pinned_by) = pinned_revision(&pins, on_base, base_revision, date)?;
     // Known without asking GitHub again unless a pin chose the commit.
     let base_horizon = match pinned_by.is_empty() {
