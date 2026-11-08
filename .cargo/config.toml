@@ -1,0 +1,4 @@
+# Keep native builds within a predictable memory/process budget on development PCs.
+# The launcher explicitly reads this source-controlled configuration.
+[build]
+jobs = 2

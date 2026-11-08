@@ -46,3 +46,5 @@ native rebuilds when edited. A dependency check alone does not prove that flow.
 The launcher used to build mods must include the native source-repository change;
 the existing official launcher will still request source from the upstream repo.
 Changing only a mod's Cargo.lock does not select this fork.
+
+Native builds use two Cargo jobs via .cargo/config.toml to limit peak memory and child-process pressure on Windows.
